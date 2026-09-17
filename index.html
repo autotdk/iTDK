@@ -171,34 +171,6 @@ header{
 .meta span{display:inline-flex;align-items:center;gap:6px}
 .meta svg{width:14px;height:14px;opacity:.65}
 
-/* Ma kiem tra - de nguoi dung tu doi chieu file da tai.
-   Voi mot tool bi phan mem diet virus soi thi day la cach duy nhat de ho
-   chac chan file khong bi ai do thay giua duong. */
-.hashbox[hidden]{display:none}   /* class co display: phai noi ro, khong thi
-                                    thuoc tinh hidden bi de len va khung rong
-                                    van hien ra */
-.hashbox{
-    margin-top:26px;display:inline-flex;align-items:center;gap:10px;
-    max-width:100%;padding:9px 10px 9px 14px;
-    border:1px solid var(--line-soft);border-radius:10px;
-    background:rgba(255,255,255,.025);
-    font-size:.76rem;color:var(--dim);
-}
-.hashbox code{
-    font-family:ui-monospace,'Cascadia Mono',Consolas,monospace;
-    color:var(--muted);
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:min(46vw,380px);
-}
-.copy{
-    flex:none;padding:5px 11px;border-radius:7px;cursor:pointer;
-    border:1px solid var(--line-soft);background:transparent;
-    color:var(--muted);font:inherit;font-size:.74rem;
-    transition:.18s;
-}
-.copy:hover{border-color:var(--line);color:var(--gold)}
-.copy.done{color:var(--cyan);border-color:rgba(79,216,232,.35)}
-
 /* --- Bo cuc phan noi dung ------------------------------------------------ */
 section{padding:66px 0;border-top:1px solid var(--line-soft);scroll-margin-top:62px}
 .sec-head{margin-bottom:38px}
@@ -329,8 +301,6 @@ footer a:hover{color:var(--gold)}
     .hero{padding-top:52px;padding-bottom:44px}
     section{padding:52px 0}
     .btn-download{width:100%;justify-content:center;padding:16px 20px}
-    .hashbox{width:100%}
-    .hashbox code{max-width:none;flex:1}
 }
 </style>
 </head>
@@ -404,13 +374,6 @@ footer a:hover{color:var(--gold)}
         Tự cập nhật
       </span>
     </div>
-  </div>
-
-  <!-- Ma kiem tra file, an di neu manifest khong ghi. -->
-  <div class="hashbox rise" id="hashbox" hidden>
-    <span>SHA-256</span>
-    <code id="hash-value"></code>
-    <button class="copy" id="copy-btn" type="button">Sao chép</button>
   </div>
 </div>
 
@@ -523,8 +486,8 @@ footer a:hover{color:var(--gold)}
     <div class="note-warn">
       <strong>Nếu Windows Defender báo file nguy hiểm:</strong> tool đọc và ghi bộ nhớ của tiến trình game
       để điều khiển nhân vật — đúng cái mà phần mềm diệt virus được dạy để chặn. Thêm ngoại lệ cho thư mục
-      chứa <code>iTDK.exe</code> rồi tải lại. Mã SHA-256 ở đầu trang dùng để đối chiếu file bạn vừa tải,
-      chắc chắn không bị ai thay giữa đường.
+      chứa <code>iTDK.exe</code> rồi tải lại, hoặc chọn "Giữ lại" (Keep) trong hộp thoại cảnh báo
+      của trình duyệt.
     </div>
   </div>
 </section>
@@ -560,14 +523,6 @@ footer a:hover{color:var(--gold)}
       <div class="body"><p>Tool vẫn chạy, nhưng đến lúc tự cập nhật thì Windows chặn việc ghi đè và tool sẽ báo lỗi. Đặt ở thư mục thường (Desktop, <code>D:\iTDK</code>…) thì mọi thứ trơn tru.</p></div>
     </details>
 
-    <details>
-      <summary>Làm sao biết file tải về là bản gốc?</summary>
-      <div class="body">
-        <p>Mở PowerShell ở thư mục chứa file rồi gõ:</p>
-        <p><code>Get-FileHash .\iTDK.exe -Algorithm SHA256</code></p>
-        <p>So chuỗi hiện ra với mã SHA-256 ở đầu trang. Khớp là file nguyên vẹn. Bản thân tool cũng tự làm bước này mỗi lần cập nhật, và từ chối cài nếu không khớp.</p>
-      </div>
-    </details>
   </div>
 </section>
 
@@ -629,7 +584,6 @@ footer a:hover{color:var(--gold)}
 
             var version = text(xml, "version");
             var url     = text(xml, "url");
-            var hash    = text(xml, "sha256");
 
             document.getElementById("version-tag").textContent =
                 version ? "Phiên bản " + version : "Bản mới nhất";
@@ -651,13 +605,6 @@ footer a:hover{color:var(--gold)}
                 document.getElementById("download-label").textContent = "Xem trang tải về";
             }
 
-            // Ma kiem tra: chi hien khi manifest that su ghi, va khi chua bi
-            // de o gia tri dat cho toan so 0.
-            if (hash && !/^0+$/.test(hash)) {
-                document.getElementById("hash-value").textContent = hash;
-                document.getElementById("hashbox").hidden = false;
-            }
-
             var notes = xml.getElementsByTagName("note");
             var list  = document.getElementById("note-list");
             list.innerHTML = "";
@@ -676,39 +623,6 @@ footer a:hover{color:var(--gold)}
             fail("Không lấy được thông tin phiên bản");
         });
 
-    // Sao chep ma kiem tra. navigator.clipboard chi chay tren HTTPS - GitHub
-    // Pages luon la HTTPS, nhung van co duong lui de mo file bang file:// thu
-    // tai may cung dung duoc.
-    document.getElementById("copy-btn").addEventListener("click", function () {
-        var self  = this;
-        var value = document.getElementById("hash-value").textContent;
-
-        var done = function () {
-            self.textContent = "Đã chép";
-            self.classList.add("done");
-            setTimeout(function () {
-                self.textContent = "Sao chép";
-                self.classList.remove("done");
-            }, 1800);
-        };
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(value).then(done, function () {
-                self.textContent = "Không chép được";
-            });
-            return;
-        }
-
-        var box = document.createElement("textarea");
-        box.value = value;
-        box.style.position = "fixed";
-        box.style.opacity = "0";
-        document.body.appendChild(box);
-        box.select();
-        try { document.execCommand("copy"); done(); }
-        catch (e) { self.textContent = "Không chép được"; }
-        document.body.removeChild(box);
-    });
 }());
 </script>
 
