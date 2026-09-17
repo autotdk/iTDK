@@ -1,202 +1,716 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTDK - Cập Nhật Phiên Bản</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iTDK — Auto Tây Du Ký</title>
+<meta name="description" content="iTDK — công cụ hỗ trợ Tân Tây Du Ký. Auto phó bản, thu thập, đăng nhập hàng loạt, đồng bộ nhiều cửa sổ. Một file duy nhất, tự cập nhật.">
+<meta name="theme-color" content="#0a0d18">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #e6e6e6;
-            line-height: 1.5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: url('https://tantayduky.vn/assets/images/cover/main-bg-top-min.jpg');
-            background-size: cover;
-            background-position: center top;
-            background-attachment: fixed;
-        }
+<!-- Chia se len Facebook/Zalo thi hien dung ten va mo ta thay vi link tran. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="iTDK — Auto Tây Du Ký">
+<meta property="og:description" content="Auto phó bản, thu thập, đăng nhập hàng loạt, đồng bộ nhiều cửa sổ. Một file duy nhất, tự cập nhật.">
 
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10, 10, 26, 0.75);
-            z-index: 1;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&display=swap" rel="stylesheet">
 
-        .updater-box {
-            position: relative;
-            z-index: 2;
-            width: 90%;
-            max-width: 600px;
-            background: rgba(20, 20, 35, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(242, 199, 76, 0.3);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+<style>
+/* ===========================================================================
+   iTDK - trang tai ve
+   ---------------------------------------------------------------------------
+   MOT FILE DUY NHAT, KHONG PHU THUOC AI. Khong anh tu mien khac, khong thu
+   vien JS, khong icon font. Ca khong khi cua trang lam bang gradient va SVG
+   viet thang trong HTML. Ly do: trang nay la cho nguoi dung TAI TOOL - no
+   phai mo duoc ngay ca khi mang cham, khi mien khac chet, hoac khi nha mang
+   chan mot CDN nao do. Font Google la thu duy nhat o ngoai, va co font du
+   phong neu no khong ve.
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 15px;
-        }
+   MOI DU LIEU DEN TU update.xml. Trang khong giu san so phien ban, link tai
+   hay dong "co gi moi" nao. Phat hanh ban moi = sua mot file.
+   =========================================================================== */
 
-        .header h1 {
-            color: #f2c74c;
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
+:root{
+    /* Mau lay tu chinh giao dien game: vang kim va xanh ngoc. */
+    --gold:#f2c74c;
+    --gold-deep:#c99a2e;
+    --cyan:#4fd8e8;
 
-        .header p { color: #00f2ff; font-size: 0.9rem; }
+    --ink:#080b14;          /* nen sau nhat */
+    --ink-2:#0d1220;        /* nen the */
+    --line:rgba(242,199,76,.16);
+    --line-soft:rgba(255,255,255,.08);
 
-        .changelog { margin-bottom: 25px; }
+    --text:#e8eaf0;
+    --muted:#9aa3b8;
+    --dim:#6b748c;
 
-        .version {
-            display: inline-block;
-            background: #00f2ff;
-            color: #000;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-        }
+    --radius:14px;
+    --wrap:1080px;
+}
 
-        .changelog ul { list-style: none; }
-        .changelog li {
-            position: relative;
-            padding-left: 15px;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            color: #ccc;
-        }
-        .changelog li::before {
-            content: '-';
-            position: absolute;
-            left: 0;
-            color: #f2c74c;
-        }
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    font-family:'Be Vietnam Pro','Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--ink);
+    color:var(--text);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+}
+/* Trang chi co mot che do toi - do la chu y, khong phai thieu sot. Khai bao
+   de thanh cuon va cac o nhap cua he thong cung mau toi theo. */
+:root{color-scheme:dark}
 
-        .btn-download {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 12px;
-            background: linear-gradient(to right, #c99a2e, #f2c74c);
-            color: #111;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            transition: 0.2s;
-            text-transform: uppercase;
-        }
-        .btn-download:hover {
-            background: linear-gradient(to right, #f2c74c, #ffd700);
-            box-shadow: 0 0 15px rgba(242, 199, 76, 0.4);
-        }
-        .btn-download.disabled {
-            background: #555;
-            color: #999;
-            pointer-events: none;
-        }
-    </style>
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+
+.wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* --- Khong khi nen -------------------------------------------------------
+   Ba lop quang sang chong nhau + mot luoi mo. Tat ca bang CSS nen khong ton
+   mot luot tai nao va khong bao gio vo hinh. */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg::before{
+    content:'';position:absolute;inset:-20%;
+    background:
+        radial-gradient(40rem 34rem at 50% 2%,  rgba(242,199,76,.20), transparent 58%),
+        radial-gradient(44rem 40rem at 12% -4%, rgba(242,199,76,.16), transparent 60%),
+        radial-gradient(40rem 38rem at 90% 6%,  rgba(79,216,232,.17), transparent 58%),
+        radial-gradient(54rem 34rem at 50% 106%,rgba(201,154,46,.12), transparent 62%);
+    animation:drift 26s ease-in-out infinite alternate;
+}
+.bg::after{
+    content:'';position:absolute;inset:0;
+    background-image:
+        linear-gradient(var(--line-soft) 1px,transparent 1px),
+        linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(circle at 50% 0%,#000 0%,transparent 70%);
+    -webkit-mask-image:radial-gradient(circle at 50% 0%,#000 0%,transparent 70%);
+    opacity:.85;
+}
+@keyframes drift{
+    from{transform:translate3d(0,0,0) scale(1)}
+    to  {transform:translate3d(-2.5%,1.5%,0) scale(1.06)}
+}
+
+/* --- Thanh dieu huong ---------------------------------------------------- */
+header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(8,11,20,.72);
+    border-bottom:1px solid var(--line-soft);
+}
+.nav{display:flex;align-items:center;gap:14px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+.brand .mark{width:30px;height:30px;flex:none}
+.nav-links{margin-left:auto;display:flex;gap:26px;font-size:.92rem;color:var(--muted)}
+.nav-links a{transition:color .18s}
+.nav-links a:hover{color:var(--gold)}
+@media(max-width:720px){.nav-links{display:none}}
+
+/* --- Hero ---------------------------------------------------------------- */
+.hero{padding-top:76px;padding-bottom:64px;text-align:center}
+
+.pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 14px;border-radius:999px;
+    border:1px solid var(--line);
+    background:rgba(242,199,76,.07);
+    color:var(--gold);
+    font-size:.82rem;font-weight:600;letter-spacing:.3px;
+}
+.pill .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--cyan);
+    box-shadow:0 0 0 0 rgba(79,216,232,.6);
+    animation:ping 2.4s ease-out infinite;
+}
+@keyframes ping{
+    0%  {box-shadow:0 0 0 0 rgba(79,216,232,.55)}
+    70% {box-shadow:0 0 0 9px rgba(79,216,232,0)}
+    100%{box-shadow:0 0 0 0 rgba(79,216,232,0)}
+}
+
+.hero h1{
+    margin:22px 0 14px;
+    font-size:clamp(2.6rem,7vw,4.4rem);
+    font-weight:800;line-height:1.05;letter-spacing:-1px;
+    background:linear-gradient(135deg,#fff 10%,var(--gold) 55%,var(--gold-deep) 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.hero .tagline{
+    font-size:clamp(1rem,2.4vw,1.2rem);
+    color:var(--muted);max-width:620px;margin:0 auto 34px;
+}
+.hero .tagline b{color:var(--text);font-weight:600}
+
+/* --- Nut tai ------------------------------------------------------------- */
+.cta{display:flex;flex-direction:column;align-items:center;gap:14px}
+
+.btn-download{
+    display:inline-flex;align-items:center;gap:12px;
+    padding:16px 38px;border-radius:12px;
+    background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+    color:#14100a;font-weight:800;font-size:1.06rem;letter-spacing:.2px;
+    box-shadow:0 10px 32px -10px rgba(242,199,76,.55);
+    transition:transform .18s cubic-bezier(.2,.8,.3,1),box-shadow .18s;
+}
+.btn-download:hover{transform:translateY(-2px);box-shadow:0 16px 42px -12px rgba(242,199,76,.7)}
+.btn-download:active{transform:translateY(0)}
+.btn-download svg{width:20px;height:20px}
+.btn-download.loading{
+    background:rgba(255,255,255,.07);color:var(--dim);
+    box-shadow:none;pointer-events:none;
+}
+
+.meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;font-size:.85rem;color:var(--dim)}
+.meta span{display:inline-flex;align-items:center;gap:6px}
+.meta svg{width:14px;height:14px;opacity:.65}
+
+/* Ma kiem tra - de nguoi dung tu doi chieu file da tai.
+   Voi mot tool bi phan mem diet virus soi thi day la cach duy nhat de ho
+   chac chan file khong bi ai do thay giua duong. */
+.hashbox[hidden]{display:none}   /* class co display: phai noi ro, khong thi
+                                    thuoc tinh hidden bi de len va khung rong
+                                    van hien ra */
+.hashbox{
+    margin-top:26px;display:inline-flex;align-items:center;gap:10px;
+    max-width:100%;padding:9px 10px 9px 14px;
+    border:1px solid var(--line-soft);border-radius:10px;
+    background:rgba(255,255,255,.025);
+    font-size:.76rem;color:var(--dim);
+}
+.hashbox code{
+    font-family:ui-monospace,'Cascadia Mono',Consolas,monospace;
+    color:var(--muted);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:min(46vw,380px);
+}
+.copy{
+    flex:none;padding:5px 11px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--line-soft);background:transparent;
+    color:var(--muted);font:inherit;font-size:.74rem;
+    transition:.18s;
+}
+.copy:hover{border-color:var(--line);color:var(--gold)}
+.copy.done{color:var(--cyan);border-color:rgba(79,216,232,.35)}
+
+/* --- Bo cuc phan noi dung ------------------------------------------------ */
+section{padding:66px 0;border-top:1px solid var(--line-soft);scroll-margin-top:62px}
+.sec-head{margin-bottom:38px}
+.sec-head .eyebrow{
+    font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--cyan);margin-bottom:8px;
+}
+.sec-head h2{font-size:clamp(1.55rem,3.6vw,2.1rem);font-weight:800;letter-spacing:-.4px}
+.sec-head p{color:var(--muted);margin-top:8px;max-width:640px}
+
+/* --- The tinh nang ------------------------------------------------------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:16px;align-items:start}
+.card{
+    position:relative;padding:24px;border-radius:var(--radius);
+    background:linear-gradient(160deg,var(--ink-2),rgba(13,18,32,.4));
+    border:1px solid var(--line-soft);
+    transition:border-color .2s,transform .2s;
+}
+.card:hover{border-color:var(--line);transform:translateY(-3px)}
+.card .icon{
+    width:38px;height:38px;margin-bottom:14px;border-radius:9px;
+    display:grid;place-items:center;
+    background:rgba(242,199,76,.09);border:1px solid var(--line);
+}
+.card .icon svg{width:19px;height:19px;stroke:var(--gold)}
+.card h3{font-size:1.02rem;font-weight:600;margin-bottom:6px}
+.card p{font-size:.9rem;color:var(--muted)}
+.card ul{margin-top:10px;font-size:.85rem;color:var(--dim);list-style:none}
+.card li{padding-left:14px;position:relative;margin-top:3px}
+.card li::before{content:'';position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.55}
+
+/* --- Co gi moi ----------------------------------------------------------- */
+.notes{
+    padding:26px 28px;border-radius:var(--radius);
+    border:1px solid var(--line);
+    background:linear-gradient(160deg,rgba(242,199,76,.05),transparent 70%);
+}
+.notes ul{list-style:none}
+.notes li{
+    position:relative;padding-left:26px;margin-bottom:11px;color:var(--text);
+}
+.notes li:last-child{margin-bottom:0}
+.notes li::before{
+    content:'';position:absolute;left:4px;top:.55em;
+    width:8px;height:8px;border-radius:2px;
+    background:var(--gold);transform:rotate(45deg);
+}
+.notes .empty{color:var(--dim);font-size:.92rem;padding-left:0}
+.notes .empty::before{display:none}
+
+/* --- Cac buoc cai dat ---------------------------------------------------- */
+.steps{counter-reset:step;display:grid;gap:14px}
+.step{
+    counter-increment:step;
+    position:relative;padding:20px 22px 20px 66px;
+    border-radius:var(--radius);
+    background:var(--ink-2);border:1px solid var(--line-soft);
+}
+.step::before{
+    content:counter(step);
+    position:absolute;left:20px;top:19px;
+    width:30px;height:30px;border-radius:8px;
+    display:grid;place-items:center;
+    background:rgba(242,199,76,.1);border:1px solid var(--line);
+    color:var(--gold);font-weight:800;font-size:.9rem;
+}
+.step h3{font-size:1rem;font-weight:600;margin-bottom:4px}
+.step p{font-size:.91rem;color:var(--muted)}
+.step code{
+    font-family:ui-monospace,Consolas,monospace;font-size:.86em;
+    background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px;color:var(--text);
+}
+
+/* Khung luu y - hai dieu khien nguoi dung hoi nhieu nhat. */
+.note-warn{
+    margin-top:18px;padding:16px 18px;border-radius:12px;
+    border:1px solid rgba(79,216,232,.22);
+    background:rgba(79,216,232,.05);
+    font-size:.9rem;color:var(--muted);
+}
+.note-warn strong{color:var(--cyan);font-weight:600}
+
+/* --- Cau hoi thuong gap -------------------------------------------------- */
+details{
+    border:1px solid var(--line-soft);border-radius:12px;
+    background:var(--ink-2);margin-bottom:10px;overflow:hidden;
+}
+details[open]{border-color:var(--line)}
+summary{
+    padding:17px 22px;cursor:pointer;font-weight:600;font-size:.97rem;
+    list-style:none;display:flex;align-items:center;gap:12px;
+    transition:color .18s;
+}
+summary::-webkit-details-marker{display:none}
+summary:hover{color:var(--gold)}
+summary::before{
+    content:'';flex:none;width:8px;height:8px;
+    border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);
+    transform:rotate(-45deg);transition:transform .2s;
+}
+details[open] summary::before{transform:rotate(45deg)}
+details .body{padding:0 22px 20px 52px;color:var(--muted);font-size:.92rem}
+details .body p+p{margin-top:10px}
+
+/* --- Chan trang ---------------------------------------------------------- */
+footer{
+    padding-top:40px;padding-bottom:56px;border-top:1px solid var(--line-soft);
+    color:var(--dim);font-size:.85rem;
+    display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;
+}
+footer .sp{margin-left:auto}
+footer a:hover{color:var(--gold)}
+
+/* --- Hien dan khi mo trang ----------------------------------------------- */
+.rise{opacity:0;transform:translateY(14px);animation:rise .6s cubic-bezier(.2,.8,.3,1) forwards}
+.rise:nth-child(2){animation-delay:.05s}
+.rise:nth-child(3){animation-delay:.1s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* Ton trong nguoi tat hieu ung chuyen dong trong cai dat he thong. */
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+    .rise{opacity:1;transform:none}
+}
+
+@media(max-width:560px){
+    .hero{padding-top:52px;padding-bottom:44px}
+    section{padding:52px 0}
+    .btn-download{width:100%;justify-content:center;padding:16px 20px}
+    .hashbox{width:100%}
+    .hashbox code{max-width:none;flex:1}
+}
+</style>
 </head>
 <body>
 
-    <div class="overlay"></div>
+<div class="bg"></div>
 
-    <div class="updater-box">
-        <div class="header">
-            <h1>iTDK</h1>
-            <p>Auto Tây Du Ký</p>
-        </div>
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <!-- Dau an: vong tron kim co gay Nhu Y o giua. Ve thang bang SVG nen
+           khong can file anh nao. -->
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" stroke="#f2c74c" stroke-width="1.6" opacity=".55"/>
+        <circle cx="16" cy="16" r="9.5" stroke="#4fd8e8" stroke-width="1.2" opacity=".4"/>
+        <path d="M16 5.5v21" stroke="#f2c74c" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M11.5 8.5h9M11.5 23.5h9" stroke="#f2c74c" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>iTDK</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#tinh-nang">Tính năng</a>
+      <a href="#moi">Có gì mới</a>
+      <a href="#cai-dat">Cài đặt</a>
+      <a href="#hoi-dap">Hỏi đáp</a>
+    </nav>
+  </div>
+</header>
 
-        <div class="changelog">
-            <span class="version" id="version-tag">Đang tải phiên bản...</span>
-            <ul id="note-list"></ul>
-        </div>
+<main>
 
-        <a href="#" class="btn-download disabled" id="download-btn">Đang tải...</a>
+<!-- ================= HERO ================= -->
+<div class="wrap hero">
+  <div class="rise">
+    <span class="pill"><span class="dot"></span><span id="version-tag">Đang lấy phiên bản…</span></span>
+  </div>
+
+  <h1 class="rise">Auto Tây Du Ký</h1>
+
+  <p class="tagline rise">
+    Chạy phó bản, thu thập, đăng nhập và đồng bộ nhiều cửa sổ cùng lúc.
+    <b>Một file duy nhất</b> — không cài đặt, không .NET, không DLL đi kèm.
+  </p>
+
+  <div class="cta rise">
+    <a class="btn-download loading" id="download-btn" href="#" aria-live="polite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+      </svg>
+      <span id="download-label">Đang tải thông tin…</span>
+    </a>
+
+    <div class="meta">
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/>
+        </svg>
+        Windows 7 trở lên
+      </span>
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 13V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/>
+        </svg>
+        Một file .exe
+      </span>
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>
+        </svg>
+        Tự cập nhật
+      </span>
+    </div>
+  </div>
+
+  <!-- Ma kiem tra file, an di neu manifest khong ghi. -->
+  <div class="hashbox rise" id="hashbox" hidden>
+    <span>SHA-256</span>
+    <code id="hash-value"></code>
+    <button class="copy" id="copy-btn" type="button">Sao chép</button>
+  </div>
+</div>
+
+<!-- ================= TINH NANG ================= -->
+<section id="tinh-nang">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Tính năng</div>
+      <h2>Làm được những gì</h2>
+      <p>Mỗi nhân vật một tiến trình riêng, tick chọn ai thì chạy người đó. Tất cả điều khiển từ một cửa sổ.</p>
     </div>
 
-    <script>
-        // Trang nay KHONG chua thong tin phien ban nao cua rieng no. Moi thu -
-        // so phien ban, danh sach "co gi moi", link tai - deu doc tu chinh file
-        // update.xml ma tool doc.
-        //
-        // Ban truoc cua trang (TDK14AllRelease) chi doc <version>, con danh
-        // sach "co gi moi" thi go tay thang vao HTML - nen moi lan phat hanh
-        // phai sua hai file va rat de quen mot. Bay gio chi sua update.xml.
-        document.addEventListener("DOMContentLoaded", function () {
-            // Duong dan tuong doi: trang nay va update.xml nam cung mot cho
-            // tren GitHub Pages, nen doi ten tai khoan hay repo cung khong
-            // phai sua gi o day.
-            fetch("update.xml?t=" + Date.now())   // ?t= de tranh cache cu
-                .then(function (response) {
-                    if (!response.ok) throw new Error("HTTP " + response.status);
-                    return response.text();
-                })
-                .then(function (data) {
-                    const xml = new DOMParser().parseFromString(data, "application/xml");
+    <div class="grid">
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+        <h3>Auto phó bản</h3>
+        <p>Đi hết lộ trình, đánh quái, mở rương, nhặt đồ và ra ngoài.</p>
+        <ul><li>Bàn Đào</li><li>Đại Nhạn Tháp</li><li>Long Cung · Long Cung 2</li></ul>
+      </div>
 
-                    const pick = function (tag) {
-                        const node = xml.getElementsByTagName(tag)[0];
-                        return node ? node.textContent.trim() : "";
-                    };
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+        <h3>Auto thu thập</h3>
+        <p>Mỗi nhân vật một lộ trình toạ độ riêng, ghi lại bằng nút REC rồi chạy.</p>
+        <ul><li>Kiểm tra có vật phẩm mới đào</li><li>Chạy/dừng riêng từng dòng</li></ul>
+      </div>
 
-                    const version = pick("version");
-                    const url     = pick("url");
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4"/><path d="m21 3-7 7M3 21l7-7"/></svg></div>
+        <h3>Quay lại vị trí train</h3>
+        <p>Chết về thành thì tự đi ngược lại đúng chỗ đang train — kể cả khi phải qua map khác.</p>
+      </div>
 
-                    if (version) {
-                        document.getElementById("version-tag").innerText =
-                            "Phiên bản mới nhất: v" + version;
-                    }
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+        <h3>Đăng nhập hàng loạt</h3>
+        <p>Lưu sẵn danh sách tài khoản, tick chọn rồi mở tất cả cùng lúc.</p>
+      </div>
 
-                    // Danh sach "co gi moi" tu cac the <note>.
-                    const notes = xml.getElementsByTagName("note");
-                    const list  = document.getElementById("note-list");
-                    for (let i = 0; i < notes.length; i++) {
-                        const item = document.createElement("li");
-                        item.innerText = notes[i].textContent.trim();
-                        list.appendChild(item);
-                    }
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/></svg></div>
+        <h3>Đồng bộ phím &amp; chuột</h3>
+        <p>Gõ ở một cửa sổ, các cửa sổ còn lại làm theo. Kèm chế độ đi theo tổ trưởng.</p>
+      </div>
 
-                    const button = document.getElementById("download-btn");
-                    if (url) {
-                        button.href = url;
-                        button.target = "_blank";
-                        button.classList.remove("disabled");
-                        button.innerText = version
-                            ? "Tải Bản Cập Nhật (v" + version + ")"
-                            : "Tải Bản Cập Nhật";
-                    } else {
-                        button.innerText = "Chưa có bản tải";
-                    }
-                })
-                .catch(function (error) {
-                    // Rot mang hoac file hong. Van phai co duong tai thu cong,
-                    // khong de nguoi dung nhin mot trang chet.
-                    console.error("Loi khi doc update.xml:", error);
-                    document.getElementById("version-tag").innerText =
-                        "Không tải được thông tin phiên bản";
-                    const button = document.getElementById("download-btn");
-                    button.href = "https://github.com/autotdk/iTDK/releases/latest";
-                    button.target = "_blank";
-                    button.classList.remove("disabled");
-                    button.innerText = "Xem trang tải về";
-                });
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>Tiện ích trong game</h3>
+        <p>Bật là chạy ngay, không qua nút Bắt đầu.</p>
+        <ul>
+          <li>Nhìn tàng hình</li>
+          <li>Tấn công nhanh</li>
+          <li>Mưa 7 đợt VIP · Cực Điện Tân Tinh</li>
+          <li>Cường hóa nhanh + Chế đồ nhanh</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <h3>Xếp cửa sổ &amp; View OBS</h3>
+        <p>Tự xếp chồng các cửa sổ game gọn gàng, xem nhiều nhân vật một lúc.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Tự uống thuốc</h3>
+        <p>Máu hoặc mana xuống thấp là uống, không phải trông chừng.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CO GI MOI ================= -->
+<section id="moi">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Cập nhật</div>
+      <h2>Có gì mới</h2>
+      <p>Tool tự kiểm tra mỗi lần mở lên. Có bản mới thì hỏi, bấm một cái là xong — không phải quay lại trang này.</p>
+    </div>
+    <div class="notes">
+      <ul id="note-list"><li class="empty">Đang tải danh sách thay đổi…</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAI DAT ================= -->
+<section id="cai-dat">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Bắt đầu</div>
+      <h2>Cài đặt trong ba bước</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <h3>Tải file về</h3>
+        <p>Bấm nút vàng ở đầu trang. Chỉ có một file <code>iTDK.exe</code>, không có bộ cài.</p>
+      </div>
+      <div class="step">
+        <h3>Đặt vào thư mục thường</h3>
+        <p>Ví dụ <code>D:\iTDK</code> hoặc ngay trên Desktop. Đừng để trong <code>Program Files</code> — Windows không cho tool tự cập nhật ở đó.</p>
+      </div>
+      <div class="step">
+        <h3>Mở game trước, rồi mở tool</h3>
+        <p>Tool tự tìm các cửa sổ game đang chạy và hiện thành danh sách. Tick nhân vật muốn chạy, chọn việc, bấm Bắt đầu.</p>
+      </div>
+    </div>
+
+    <div class="note-warn">
+      <strong>Nếu Windows Defender báo file nguy hiểm:</strong> tool đọc và ghi bộ nhớ của tiến trình game
+      để điều khiển nhân vật — đúng cái mà phần mềm diệt virus được dạy để chặn. Thêm ngoại lệ cho thư mục
+      chứa <code>iTDK.exe</code> rồi tải lại. Mã SHA-256 ở đầu trang dùng để đối chiếu file bạn vừa tải,
+      chắc chắn không bị ai thay giữa đường.
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOI DAP ================= -->
+<section id="hoi-dap">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Hỏi đáp</div>
+      <h2>Câu hỏi hay gặp</h2>
+    </div>
+
+    <details>
+      <summary>Có cần cài .NET hay thư viện gì không?</summary>
+      <div class="body"><p>Không. Toàn bộ tool nằm trong một file <code>iTDK.exe</code>, viết bằng C++ thuần và chỉ dùng thư viện có sẵn của Windows. Tải về là chạy được ngay.</p></div>
+    </details>
+
+    <details>
+      <summary>Cập nhật bản mới thế nào?</summary>
+      <div class="body">
+        <p>Không phải làm gì cả. Mỗi lần mở lên, tool tự hỏi máy chủ xem có bản mới không; có thì hiện hộp thoại, bấm Cập nhật là nó tự tải, tự thay và mở lại.</p>
+        <p>Riêng những bản đánh dấu <b>bắt buộc</b> thì không có nút "Để sau" — thường là khi game vừa vá và bản cũ đã chạy sai, chạy tiếp lúc đó rất dễ mất tài khoản.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Chạy được bao nhiêu cửa sổ game cùng lúc?</summary>
+      <div class="body"><p>Không giới hạn từ phía tool — mỗi cửa sổ game là một dòng trong danh sách. Giới hạn thật nằm ở RAM và CPU máy bạn, vì mỗi cửa sổ game là một tiến trình riêng.</p></div>
+    </details>
+
+    <details>
+      <summary>Đặt trong Program Files có sao không?</summary>
+      <div class="body"><p>Tool vẫn chạy, nhưng đến lúc tự cập nhật thì Windows chặn việc ghi đè và tool sẽ báo lỗi. Đặt ở thư mục thường (Desktop, <code>D:\iTDK</code>…) thì mọi thứ trơn tru.</p></div>
+    </details>
+
+    <details>
+      <summary>Làm sao biết file tải về là bản gốc?</summary>
+      <div class="body">
+        <p>Mở PowerShell ở thư mục chứa file rồi gõ:</p>
+        <p><code>Get-FileHash .\iTDK.exe -Algorithm SHA256</code></p>
+        <p>So chuỗi hiện ra với mã SHA-256 ở đầu trang. Khớp là file nguyên vẹn. Bản thân tool cũng tự làm bước này mỗi lần cập nhật, và từ chối cài nếu không khớp.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <span>iTDK — công cụ hỗ trợ Tân Tây Du Ký</span>
+  <span class="sp"></span>
+  <a href="https://github.com/autotdk/iTDK/releases" target="_blank" rel="noopener">Các bản đã phát hành</a>
+</footer>
+
+<script>
+/* ===========================================================================
+   Moi du lieu tren trang den tu update.xml - cung file ma iTDK.exe doc.
+   Trang khong giu san so phien ban, link tai hay dong "co gi moi" nao, nen
+   phat hanh ban moi chi phai sua MOT file.
+
+   Ban truoc cua trang nay (TDK14AllRelease) chi lay so <version>, con danh
+   sach thay doi thi go tay thang vao HTML - moi lan phat hanh phai sua hai
+   cho va rat de quen mot.
+   =========================================================================== */
+(function () {
+    "use strict";
+
+    var FALLBACK = "https://github.com/autotdk/iTDK/releases/latest";
+
+    function text(xml, tag) {
+        var node = xml.getElementsByTagName(tag)[0];
+        return node ? node.textContent.trim() : "";
+    }
+
+    function fail(message) {
+        document.getElementById("version-tag").textContent = message;
+        var button = document.getElementById("download-btn");
+        button.classList.remove("loading");
+        button.href = FALLBACK;
+        button.target = "_blank";
+        button.rel = "noopener";
+        document.getElementById("download-label").textContent = "Xem trang tải về";
+
+        var list = document.getElementById("note-list");
+        list.innerHTML = '<li class="empty">Không đọc được danh sách thay đổi. ' +
+                         'Xem trực tiếp ở trang phát hành trên GitHub.</li>';
+    }
+
+    // Duong dan tuong doi: trang nay va update.xml nam cung mot cho, nen doi
+    // ten tai khoan hay repo cung khong phai sua gi o day.
+    // ?t= de trinh duyet khong dung ban cache cu sau khi vua phat hanh.
+    fetch("update.xml?t=" + Date.now())
+        .then(function (response) {
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            return response.text();
+        })
+        .then(function (data) {
+            var xml = new DOMParser().parseFromString(data, "application/xml");
+            if (xml.getElementsByTagName("parsererror").length) {
+                throw new Error("update.xml hong");
+            }
+
+            var version = text(xml, "version");
+            var url     = text(xml, "url");
+            var hash    = text(xml, "sha256");
+
+            document.getElementById("version-tag").textContent =
+                version ? "Phiên bản " + version : "Bản mới nhất";
+
+            var button = document.getElementById("download-btn");
+            if (url) {
+                button.classList.remove("loading");
+                button.href = url;
+                button.target = "_blank";
+                button.rel = "noopener";
+                document.getElementById("download-label").textContent =
+                    version ? "Tải iTDK " + version : "Tải iTDK";
+            } else {
+                // Co manifest nhung chua co link - van phai co duong di tiep.
+                button.classList.remove("loading");
+                button.href = FALLBACK;
+                button.target = "_blank";
+                button.rel = "noopener";
+                document.getElementById("download-label").textContent = "Xem trang tải về";
+            }
+
+            // Ma kiem tra: chi hien khi manifest that su ghi, va khi chua bi
+            // de o gia tri dat cho toan so 0.
+            if (hash && !/^0+$/.test(hash)) {
+                document.getElementById("hash-value").textContent = hash;
+                document.getElementById("hashbox").hidden = false;
+            }
+
+            var notes = xml.getElementsByTagName("note");
+            var list  = document.getElementById("note-list");
+            list.innerHTML = "";
+            if (notes.length === 0) {
+                list.innerHTML = '<li class="empty">Bản này không ghi chú thay đổi nào.</li>';
+            } else {
+                for (var i = 0; i < notes.length; i++) {
+                    var item = document.createElement("li");
+                    item.textContent = notes[i].textContent.trim();
+                    list.appendChild(item);
+                }
+            }
+        })
+        .catch(function (error) {
+            console.error("Không đọc được update.xml:", error);
+            fail("Không lấy được thông tin phiên bản");
         });
-    </script>
+
+    // Sao chep ma kiem tra. navigator.clipboard chi chay tren HTTPS - GitHub
+    // Pages luon la HTTPS, nhung van co duong lui de mo file bang file:// thu
+    // tai may cung dung duoc.
+    document.getElementById("copy-btn").addEventListener("click", function () {
+        var self  = this;
+        var value = document.getElementById("hash-value").textContent;
+
+        var done = function () {
+            self.textContent = "Đã chép";
+            self.classList.add("done");
+            setTimeout(function () {
+                self.textContent = "Sao chép";
+                self.classList.remove("done");
+            }, 1800);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(value).then(done, function () {
+                self.textContent = "Không chép được";
+            });
+            return;
+        }
+
+        var box = document.createElement("textarea");
+        box.value = value;
+        box.style.position = "fixed";
+        box.style.opacity = "0";
+        document.body.appendChild(box);
+        box.select();
+        try { document.execCommand("copy"); done(); }
+        catch (e) { self.textContent = "Không chép được"; }
+        document.body.removeChild(box);
+    });
+}());
+</script>
 
 </body>
 </html>
