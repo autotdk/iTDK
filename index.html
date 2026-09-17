@@ -206,6 +206,14 @@ section{padding:66px 0;border-top:1px solid var(--line-soft);scroll-margin-top:6
 
 /* --- The tinh nang ------------------------------------------------------- */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:16px}
+
+/* So the la so le (7 the tren 3 cot) thi the cuoi dung mot minh o hang duoi,
+   lech han sang trai va nhin nhu trang con thieu. Day no vao cot giua.
+   Chi ap dung tu 840px tro len - do la be ngang ma luoi con du cho 3 cot;
+   hep hon thi luoi tu rut xuong 2 cot va quy tac nay khong con dung. */
+@media(min-width:840px){
+    .grid .card:last-child:nth-child(3n+1){grid-column:2}
+}
 .card{
     display:flex;flex-direction:column;
     position:relative;padding:24px;border-radius:var(--radius);
@@ -440,7 +448,7 @@ footer a:hover{color:var(--gold)}
       <div class="card">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
         <h3>Đăng nhập hàng loạt</h3>
-        <p>Lưu sẵn tài khoản, mở tất cả cùng một lúc.</p>
+        <p>Hỗ trợ đăng nhập siêu tốc.</p>
         <ul>
           <li>Tick chọn acc cần mở</li>
           <li>Nhập/xuất danh sách ra file</li>
@@ -481,16 +489,6 @@ footer a:hover{color:var(--gold)}
         </ul>
       </div>
 
-      <div class="card">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <h3>Tự uống thuốc</h3>
-        <p>Máu hoặc mana xuống dưới 30% là uống.</p>
-        <ul>
-          <li>Canh cả máu lẫn mana</li>
-          <li>Luôn bật, không phải cài gì</li>
-          <li>Không phải trông chừng</li>
-        </ul>
-      </div>
     </div>
   </div>
 </section>
