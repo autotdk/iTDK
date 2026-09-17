@@ -28,7 +28,7 @@
          Tinh SAU khi da VMProtect / ky so, tuc tinh tren dung file se duoc tai
          ve. Chay release\make-release.ps1 de no tu dien vao day.
          Bo trong (hoac xoa han the nay) thi tool khong kiem tra ma bo qua. -->
-    <sha256>0000000000000000000000000000000000000000000000000000000000000000</sha256>
+    <sha256>e7f29bce8af9d4ca10df4ea7d97037a0e45de8b1f0e9530f3e4b04e15ef2a8cc</sha256>
 
     <!-- true = BAT BUOC: nguoi dung khong cap nhat thi tool dong lai.
               Dung khi game vua va va bang dia chi cu da sai - chay tiep luc
