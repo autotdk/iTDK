@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  update.xml - manifest cap nhat cua iTDK.
+
+  File nay o https://raw.githubusercontent.com/autotdk/iTDK/main/update.xml
+  Moi lan iTDK khoi dong, no tai file nay ve (vai tram byte) va so phien ban.
+
+  GIONG HET file update.xml cua TDK14All, chi them <sha256> va <note>.
+  Trang index.html tren GitHub Pages cung doc chinh file nay - sua o day la
+  ca tool lan trang web cung doi. The nao khong hieu thi cong cu bo qua.
+-->
+<item>
+
+    <!-- Phien ban. PHAI lon hon phien ban dang chay thi tool moi hoi nguoi
+         dung. So sanh theo tung bac, khong phai so chuoi: 1.0.10 > 1.0.9. -->
+    <version>1.0.0</version>
+
+    <!-- Link tai .exe.
+
+         De file trong GitHub Releases, KHONG commit thang vao repo. Repo phat
+         hanh cu (TDK14AllRelease) commit file .zip moi lan: sau 30 ban thi
+         .git da 26 MB va khong bao gio nho lai duoc - git giu het moi ban zip
+         da tung commit, ke ca sau khi xoa khoi cay thu muc. -->
+    <url>https://github.com/autotdk/iTDK/releases/download/v1.0.0/iTDK.exe</url>
+
+    <!-- SHA-256 cua dung file .exe o link tren.
+
+         Tinh SAU khi da VMProtect / ky so, tuc tinh tren dung file se duoc tai
+         ve. Chay release\make-release.ps1 de no tu dien vao day.
+         Bo trong (hoac xoa han the nay) thi tool khong kiem tra ma bo qua. -->
+    <sha256>0000000000000000000000000000000000000000000000000000000000000000</sha256>
+
+    <!-- true = BAT BUOC: nguoi dung khong cap nhat thi tool dong lai.
+              Dung khi game vua va va bang dia chi cu da sai - chay tiep luc
+              do rat de mat tai khoan.
+         false = binh thuong: hien hop thoai, co nut "Để sau". -->
+    <mandatory>false</mandatory>
+
+    <!-- "Co gi moi" - moi y mot the <note>, hien thang trong hop thoai cua
+         tool va tren trang index.html. Viet cho NGUOI CHOI doc. -->
+    <note>Thêm phó bản Long Cung 2</note>
+    <note>Thêm Auto Thu Thập</note>
+    <note>Thêm tự động quay lại vị trí train</note>
+    <note>Sửa lỗi mở rương không ăn</note>
+
+</item>

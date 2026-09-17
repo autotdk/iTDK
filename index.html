@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iTDK - Cập Nhật Phiên Bản</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e6e6e6;
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://tantayduky.vn/assets/images/cover/main-bg-top-min.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 10, 26, 0.75);
+            z-index: 1;
+        }
+
+        .updater-box {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 600px;
+            background: rgba(20, 20, 35, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(242, 199, 76, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #f2c74c;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .header p { color: #00f2ff; font-size: 0.9rem; }
+
+        .changelog { margin-bottom: 25px; }
+
+        .version {
+            display: inline-block;
+            background: #00f2ff;
+            color: #000;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .changelog ul { list-style: none; }
+        .changelog li {
+            position: relative;
+            padding-left: 15px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+        .changelog li::before {
+            content: '-';
+            position: absolute;
+            left: 0;
+            color: #f2c74c;
+        }
+
+        .btn-download {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(to right, #c99a2e, #f2c74c);
+            color: #111;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-download:hover {
+            background: linear-gradient(to right, #f2c74c, #ffd700);
+            box-shadow: 0 0 15px rgba(242, 199, 76, 0.4);
+        }
+        .btn-download.disabled {
+            background: #555;
+            color: #999;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="updater-box">
+        <div class="header">
+            <h1>iTDK</h1>
+            <p>Auto Tây Du Ký</p>
+        </div>
+
+        <div class="changelog">
+            <span class="version" id="version-tag">Đang tải phiên bản...</span>
+            <ul id="note-list"></ul>
+        </div>
+
+        <a href="#" class="btn-download disabled" id="download-btn">Đang tải...</a>
+    </div>
+
+    <script>
+        // Trang nay KHONG chua thong tin phien ban nao cua rieng no. Moi thu -
+        // so phien ban, danh sach "co gi moi", link tai - deu doc tu chinh file
+        // update.xml ma tool doc.
+        //
+        // Ban truoc cua trang (TDK14AllRelease) chi doc <version>, con danh
+        // sach "co gi moi" thi go tay thang vao HTML - nen moi lan phat hanh
+        // phai sua hai file va rat de quen mot. Bay gio chi sua update.xml.
+        document.addEventListener("DOMContentLoaded", function () {
+            // Duong dan tuong doi: trang nay va update.xml nam cung mot cho
+            // tren GitHub Pages, nen doi ten tai khoan hay repo cung khong
+            // phai sua gi o day.
+            fetch("update.xml?t=" + Date.now())   // ?t= de tranh cache cu
+                .then(function (response) {
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    return response.text();
+                })
+                .then(function (data) {
+                    const xml = new DOMParser().parseFromString(data, "application/xml");
+
+                    const pick = function (tag) {
+                        const node = xml.getElementsByTagName(tag)[0];
+                        return node ? node.textContent.trim() : "";
+                    };
+
+                    const version = pick("version");
+                    const url     = pick("url");
+
+                    if (version) {
+                        document.getElementById("version-tag").innerText =
+                            "Phiên bản mới nhất: v" + version;
+                    }
+
+                    // Danh sach "co gi moi" tu cac the <note>.
+                    const notes = xml.getElementsByTagName("note");
+                    const list  = document.getElementById("note-list");
+                    for (let i = 0; i < notes.length; i++) {
+                        const item = document.createElement("li");
+                        item.innerText = notes[i].textContent.trim();
+                        list.appendChild(item);
+                    }
+
+                    const button = document.getElementById("download-btn");
+                    if (url) {
+                        button.href = url;
+                        button.target = "_blank";
+                        button.classList.remove("disabled");
+                        button.innerText = version
+                            ? "Tải Bản Cập Nhật (v" + version + ")"
+                            : "Tải Bản Cập Nhật";
+                    } else {
+                        button.innerText = "Chưa có bản tải";
+                    }
+                })
+                .catch(function (error) {
+                    // Rot mang hoac file hong. Van phai co duong tai thu cong,
+                    // khong de nguoi dung nhin mot trang chet.
+                    console.error("Loi khi doc update.xml:", error);
+                    document.getElementById("version-tag").innerText =
+                        "Không tải được thông tin phiên bản";
+                    const button = document.getElementById("download-btn");
+                    button.href = "https://github.com/autotdk/iTDK/releases/latest";
+                    button.target = "_blank";
+                    button.classList.remove("disabled");
+                    button.innerText = "Xem trang tải về";
+                });
+        });
+    </script>
+
+</body>
+</html>
