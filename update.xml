@@ -30,10 +30,22 @@
          da tung commit, ke ca sau khi xoa khoi cay thu muc. -->
     <url>https://github.com/autotdk/iTDK/releases/download/v1.0.0/iTDK.exe</url>
 
-    <!-- true = BAT BUOC: nguoi dung khong cap nhat thi tool dong lai.
-              Dung khi game vua va va bang dia chi cu da sai - chay tiep luc
-              do rat de mat tai khoan.
-         false = binh thuong: hien hop thoai, co nut "Để sau". -->
+    <!-- Muc ep buoc. Ba gia tri, tu nhe den nang:
+
+         false   Binh thuong. Hien hop thoai, co nut "Để sau".
+
+         true    BAT BUOC. Hien hop thoai nhung khong co "Để sau"; nguoi dung
+                 tu choi thi tool dong lai. Dung khi game vua va va bang dia
+                 chi cu da sai - chay tiep luc do rat de mat tai khoan.
+
+         silent  KHONG HOI CAU NAO. Mo tool len la no tu tai, tu thay, tu mo
+                 lai; chi hien mot thanh tien do (khong co nut Huy). Dung khi
+                 ban cu hong den muc khong nen de ai bam "Để sau", va khong
+                 muon lam phien bang mot hop thoai nua.
+
+         Go sai (vi du "sielnt") thi tool hieu thanh false - muc nhe nhat.
+         Co y nhu vay: mot loi go khong duoc bien thanh tu dong cai dat len
+         may moi nguoi dung ma khong hoi. -->
     <mandatory>false</mandatory>
 
     <!-- "Co gi moi" - moi y mot the <note>, hien thang trong hop thoai cua
