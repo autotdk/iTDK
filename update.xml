@@ -20,7 +20,7 @@
          dung tai ban "moi" ve, mo len van thay so cu, va lan khoi dong sau lai
          duoc hoi cap nhat tiep - vong lap vo tan trong nhu tool bi loi.
          Kiem nhanh: chuot phai iTDK.exe > Properties > Details. -->
-    <version>1.0.1</version>
+    <version>1.0.0</version>
 
     <!-- Link tai .exe.
 
@@ -52,7 +52,7 @@
          tool va tren trang index.html. Viet cho NGUOI CHOI doc. -->
     <note>Thêm phó bản Long Cung 2</note>
     <note>Thêm Auto Thu Thập</note>
-    <note>Thêm tự động quay lại vị trí train</note>
+    <note>Tính năng tick chọn tự động theo team</note>
     <note>Sửa lỗi mở rương không ăn</note>
 
 </item>
