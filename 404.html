@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Đang chuyển hướng...</title>
+    <script>
+      var currentUrl = window.location.href;
+      // Chuyển toàn bộ URL đang gõ sai thành chữ thường để kiểm tra
+      var lowerUrl = currentUrl.toLowerCase();
+      
+      // Nếu URL có chứa '/itdk' (không phân biệt hoa thường)
+      if (lowerUrl.indexOf('/itdk') !== -1) {
+        // Thay thế bằng đúng tên thư mục phân biệt hoa thường
+        var correctUrl = currentUrl.replace(/itdk/i, 'iTDK');
+        window.location.replace(correctUrl);
+      }
+    </script>
+  </head>
+  <body>
+    <p>Đang tìm kiếm trang...</p>
+  </body>
+</html>
