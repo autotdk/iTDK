@@ -20,7 +20,7 @@
          dung tai ban "moi" ve, mo len van thay so cu, va lan khoi dong sau lai
          duoc hoi cap nhat tiep - vong lap vo tan trong nhu tool bi loi.
          Kiem nhanh: chuot phai iTDK.exe > Properties > Details. -->
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <!-- Link tai .exe.
 
@@ -28,7 +28,7 @@
          hanh cu (TDK14AllRelease) commit file .zip moi lan: sau 30 ban thi
          .git da 26 MB va khong bao gio nho lai duoc - git giu het moi ban zip
          da tung commit, ke ca sau khi xoa khoi cay thu muc. -->
-    <url>https://github.com/autotdk/iTDK/releases/download/v1.0.2/iTDK.exe</url>
+    <url>https://github.com/autotdk/iTDK/releases/download/v1.0.3/iTDK.exe</url>
 
     <!-- Muc ep buoc. Ba gia tri, tu nhe den nang:
 
